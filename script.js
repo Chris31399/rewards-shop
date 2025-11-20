@@ -23,6 +23,32 @@ if (signupForm) {
   });
 }
 
+const { data, error } = await supabase.auth.signUp({
+  email,
+  password
+});
+
+// After signup, create the profile row:
+if (!error) {
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .insert([
+      {
+        user_id: data.user.id,
+        role_id: 3  // customer
+      }
+    ]);
+
+  if (profileError) {
+    alert("Profile creation error: " + profileError.message);
+    return;
+  }
+
+  alert("Signup complete! Please log in.");
+  window.location.href = "login.html";
+}
+
+
 // ========================
 // LOGIN
 // ========================
