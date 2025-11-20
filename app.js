@@ -85,4 +85,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+async function loadProfile() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const { data: profile } = await supabaseClient
+        .from("profiles")
+        .select("email, points, roles(name)")
+        .eq("id", user.id)
+        .single();
+
+    document.getElementById("profile").innerHTML = `
+        <p>Email: ${profile.email}</p>
+        <p>Role: ${profile.roles.name}</p>
+        <p>Points: ${profile.points}</p>
+    `;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("profile")) {
+        loadProfile();
+    }
+
+    const logoutBtn = document.getElementById("logout");
+    if (logoutBtn) {
+        logoutBtn.onclick = async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = "login.html";
+        };
+    }
+});
+
 testConnection();
