@@ -2,53 +2,53 @@
 // SIGN UP
 // ========================
 const signupForm = document.getElementById("signup-form");
+
 if (signupForm) {
   signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // 1. Grab user input
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password
-    });
+    try {
+      // 2. Create Supabase Auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password
+      });
 
-    if (error) {
-      alert("Signup error: " + error.message);
-    } else {
-      alert("Signup successful! Please log in.");
+      if (authError) {
+        alert("Signup error: " + authError.message);
+        return;
+      }
+
+      // 3. Create profile row in users table
+      const { error: profileError } = await supabase
+        .from("users") // rename from 'profiles' to 'users' if you changed it
+        .insert([
+          {
+            id: authData.user.id, // PK matches auth UID
+            email: email,         // required column
+            role_id: 3,           // default to customer
+            points: 0             // optional, default is 0
+          }
+        ]);
+
+      if (profileError) {
+        alert("Profile creation error: " + profileError.message);
+        return;
+      }
+      // 4. Success
+      alert("Signup complete! Please log in.");
       window.location.href = "login.html";
+
+    } catch (err) {
+      console.error("Unexpected error during signup:", err);
+      alert("An unexpected error occurred. Check console.");
     }
   });
 }
-
-const { data, error } = await supabase.auth.signUp({
-  email,
-  password
-});
-
-// After signup, create the profile row:
-if (!error) {
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .insert([
-      {
-        id: data.user.id,
-        email: email,
-        role_id: 3  // customer
-      }
-    ]);
-
-  if (profileError) {
-    alert("Profile creation error: " + profileError.message);
-    return;
-  }
-
-  alert("Signup complete! Please log in.");
-  window.location.href = "login.html";
-}
-
 
 // ========================
 // LOGIN
