@@ -40,8 +40,11 @@ async function handleSignup(email, password) {
         return;
     }
 
-    // 3. Redirect
-    window.location.href = "dashboard.html";
+    // 3. Success message
+    alert("Successfully created an account! Please log in.");
+
+    // 4. Redirect to login page
+    window.location.href = "login.html";
 }
 
 // Only runs on signup page
