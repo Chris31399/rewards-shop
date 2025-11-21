@@ -23,6 +23,9 @@ if (signupForm) {
         return;
       }
 
+      console.log("auth session:", supabase.auth.session());
+      console.log("user id to insert:", authData.user.id);
+      
       // 3. Create profile row in users table
       const { error: profileError } = await supabase
         .from("users") // rename from 'profiles' to 'users' if you changed it
