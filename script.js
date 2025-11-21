@@ -35,6 +35,7 @@ if (!error) {
     .insert([
       {
         id: data.user.id,
+        email: email,
         role_id: 3  // customer
       }
     ]);
