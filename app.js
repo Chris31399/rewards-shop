@@ -75,19 +75,6 @@ async function handleLogin(email, password) {
     window.location.href = "dashboard.html";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const loginForm = document.getElementById("login-form");
-
-    if (loginForm) {
-        loginForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            handleLogin(email, password);
-        });
-    }
-});
-
 async function loadProfile() {
     const { data: { user } } = await supabaseClient.auth.getUser();
 
