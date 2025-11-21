@@ -34,7 +34,7 @@ if (!error) {
     .from("profiles")
     .insert([
       {
-        user_id: data.user.id,
+        id: data.user.id,
         role_id: 3  // customer
       }
     ]);
