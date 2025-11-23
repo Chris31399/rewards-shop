@@ -13,7 +13,6 @@ body {
   align-items: center;
   min-height: 100vh;
 
-  /* You can replace img.jpg with your own background */
   background: url('PurpleForestImage.jpg') no-repeat;
   background-size: cover;
   background-position: center;
