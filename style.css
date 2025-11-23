@@ -14,7 +14,7 @@ body {
   min-height: 100vh;
 
   /* You can replace img.jpg with your own background */
-  background: url('img.jpg') no-repeat;
+  background: url('PurpleForestImage.jpg') no-repeat;
   background-size: cover;
   background-position: center;
 }
