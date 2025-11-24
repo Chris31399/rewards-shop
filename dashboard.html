@@ -2,13 +2,47 @@
 <html>
 <head>
   <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Your Dashboard</h1>
 
-  <p id="user-info">Checking login…</p>
-  <button id="logout-button">Log Out</button>
-  
+  <div class="dashboard-wrapper">
+
+    <!-- Top section: User + logout -->
+    <div class="dashboard-header">
+      <h1>Prize Wall</h1>
+      <button id="logout-button" class="logout-btn">Log Out</button>
+    </div>
+
+    <!-- Filters / Search / Sort -->
+    <div class="toolbar">
+      <button class="toolbar-btn">Filters</button>
+      <input type="text" class="search-bar" placeholder="Search prizes...">
+      <button class="toolbar-btn">Sort</button>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+      <div class="product-placeholder"></div>
+      <div class="product-placeholder"></div>
+      <div class="product-placeholder"></div>
+      <div class="product-placeholder"></div>
+      <div class="product-placeholder"></div>
+      <div class="product-placeholder"></div>
+      <div class="product-placeholder"></div>
+      <div class="product-placeholder"></div>
+      <div class="product-placeholder"></div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="page-btn">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+    </div>
+
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 </body>
