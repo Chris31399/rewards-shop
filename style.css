@@ -333,3 +333,76 @@ body {
 .reward-card {
   position: relative;
 }
+
+/* ===========================
+   ADMIN DASHBOARD STYLES
+   =========================== */
+
+.admin-nav {
+  margin-bottom: 20px;
+}
+
+.admin-nav .tab-btn {
+  padding: 10px 20px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #3498db;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.admin-nav .tab-btn.active {
+  background-color: #2980b9;
+}
+
+.admin-section {
+  display: none;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.admin-section.active {
+  display: block;
+}
+
+/* Admin Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-table th, .admin-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.admin-table th {
+  background-color: #3498db;
+  color: white;
+}
+
+.admin-table td button {
+  padding: 6px 12px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.edit-btn { background-color: #f1c40f; color: #fff; }
+.delete-btn { background-color: #e74c3c; color: #fff; }
+.add-btn { background-color: #2ecc71; color: #fff; margin-top: 10px; }
+
+.placeholder {
+  text-align: center;
+  padding: 50px 0;
+  color: #ccc;
+  font-size: 1.2em;
+}
