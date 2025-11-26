@@ -19,12 +19,17 @@
     </nav>
 
     <div id="admin-sections">
-      <!-- Products Section -->
+        <!-- Products Section -->
       <div id="products-section" class="active admin-section">
-        <h2>Manage Products</h2>
+        <div class="section-header">
+          <h2>Manage Products</h2>
+          <button class="add-btn" id="add-product-btn">Add New Product</button>
+        </div>
+      
         <table id="product-table" class="admin-table">
           <thead>
             <tr>
+              <th>Image</th>
               <th>ID</th>
               <th>Name</th>
               <th>Cost</th>
@@ -36,9 +41,7 @@
             <!-- Dynamic product rows go here -->
           </tbody>
         </table>
-        <button class="add-btn" id="add-product-btn">Add New Product</button>
       </div>
-
       <!-- Reports Section -->
       <div id="reports-section" class="admin-section">
         <h2>Reports</h2>
