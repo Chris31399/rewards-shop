@@ -5,37 +5,51 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <div class="dashboard-wrapper">
+  <!-- Top section: User + logout -->
+  <div class="dashboard-header">
+    <h1>Prize Wall</h1>
+    <button id="logout-button" class="logout-btn">Log Out</button>
+  </div>
+  <!-- Filters / Search / Sort -->
+  <div class="toolbar">
+    <button id="filter-btn" class="toolbar-btn">Filters</button>
+  
+    <input type="text" id="search-input" class="search-bar" placeholder="Search prizes...">
+  
+    <select id="sort-select" class="toolbar-btn">
+        <option value="">Sort</option>
+        <option value="low-to-high">Cost: Low → High</option>
+        <option value="high-to-low">Cost: High → Low</option>
+        <option value="name-asc">Name: A → Z</option>
+        <option value="name-desc">Name: Z → A</option>
+    </select>
+  </div>
+  
+  <div id="profile"></div>
 
-    <!-- Top section: User + logout -->
-    <div class="dashboard-header">
-      <h1>Prize Wall</h1>
-      <button id="logout-button" class="logout-btn">Log Out</button>
+  <!-- Product Grid (rewards will be dynamically inserted here) -->
+  <div class="product-grid" id="rewards-container">
+    <!-- app.js will populate this dynamically -->
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button class="page-btn">1</button>
+    <button class="page-btn">2</button>
+    <button class="page-btn">3</button>
+  </div>
+  <!-- Filter Modal -->
+  <div id="filter-modal" class="filter-modal hidden">
+    <div class="filter-content">
+        <h2>Filter by Tag</h2>
+        <div id="filter-tag-list"></div>
+        <button id="apply-filter" class="toolbar-btn">Apply</button>
+        <button id="close-filter" class="toolbar-btn">Close</button>
     </div>
-
-    <!-- Filters / Search / Sort -->
-    <div class="toolbar">
-      <button class="toolbar-btn">Filters</button>
-      <input type="text" class="search-bar" placeholder="Search prizes...">
-      <button class="toolbar-btn">Sort</button>
-    </div>
-    
-    
-    <div id="profile"></div>
-
-    <!-- Product Grid (rewards will be dynamically inserted here) -->
-    <div class="product-grid" id="rewards-container">
-      <!-- app.js will populate this dynamically -->
-    </div>
-
-    <!-- Pagination -->
-    <div class="pagination">
-      <button class="page-btn">1</button>
-      <button class="page-btn">2</button>
-      <button class="page-btn">3</button>
-    </div>
-
+  </div>
+  
+  <!-- End of Dashboard Wrapper-->
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
