@@ -178,6 +178,8 @@ async function loadRewards() {
     card.className = "reward-card"; // proper reward styling
 
     card.innerHTML = `
+      <span class="wishlist-heart heart-empty" data-id="${reward.id}">♡</span>
+    
       <img src="${reward.image_url || "placeholder.jpg"}" class="reward-image">
       <h3>${reward.name}</h3>
       <p class="reward-cost">${reward.cost} pts</p>
@@ -188,13 +190,29 @@ async function loadRewards() {
     `;
 
     container.appendChild(card);
+    
+    card.querySelector(".wishlist-heart").addEventListener("click", (e) => {
+    const heart = e.target;
+  
+    if (heart.classList.contains("heart-empty")) {
+      heart.classList.remove("heart-empty");
+      heart.classList.add("heart-filled");
+      heart.textContent = "❤️";
+    } else {
+      heart.classList.remove("heart-filled");
+      heart.classList.add("heart-empty");
+      heart.textContent = "♡";
+    }
+});
+
+
   });
 
   if (rewards.length === 0) {
     container.innerHTML = `<p>No rewards available.</p>`;
   }
 }
-
+// RENDER REWARDS
 function renderRewards() {
   const container = document.getElementById("rewards-container");
   container.innerHTML = "";
@@ -262,6 +280,22 @@ function renderRewards() {
     `;
 
     container.appendChild(card);
+
+    // Handle wishlist click
+    card.querySelector(".wishlist-heart").addEventListener("click", (e) => {
+    const heart = e.target;
+
+    if (heart.classList.contains("heart-empty")) {
+      heart.classList.remove("heart-empty");
+      heart.classList.add("heart-filled");
+      heart.textContent = "❤️";
+    } else {
+      heart.classList.remove("heart-filled");
+      heart.classList.add("heart-empty");
+      heart.textContent = "♡";
+    }
+});
+
   });
 }
 
