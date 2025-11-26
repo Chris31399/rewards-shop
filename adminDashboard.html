@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    /* Reset some default styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f9f9f9;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      color: #333;
+    }
+
+    #logout-button {
+      padding: 8px 16px;
+      background-color: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    nav {
+      margin-bottom: 20px;
+    }
+
+    nav button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #3498db;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    nav button.active {
+      background-color: #2980b9;
+    }
+
+    #admin-sections > div {
+      display: none;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    #admin-sections > div.active {
+      display: block;
+    }
+
+    /* Product list styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+
+    td button {
+      padding: 6px 12px;
+      margin-right: 5px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+
+    .edit-btn { background-color: #f1c40f; color: #fff; }
+    .delete-btn { background-color: #e74c3c; color: #fff; }
+    .add-btn { background-color: #2ecc71; color: #fff; margin-top: 10px; }
+
+    /* Placeholder sections */
+    .placeholder {
+      text-align: center;
+      padding: 50px 0;
+      color: #888;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+    <button id="logout-button">Logout</button>
+  </header>
+
+  <nav>
+    <button class="tab-btn active" data-section="products-section">Products</button>
+    <button class="tab-btn" data-section="reports-section">Reports</button>
+    <button class="tab-btn" data-section="registration-section">Registration</button>
+  </nav>
+
+  <div id="admin-sections">
+    <!-- Products Section -->
+    <div id="products-section" class="active">
+      <h2>Manage Products</h2>
+      <table id="product-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Cost</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamic product rows go here -->
+        </tbody>
+      </table>
+      <button class="add-btn" id="add-product-btn">Add New Product</button>
+    </div>
+
+    <!-- Reports Section -->
+    <div id="reports-section">
+      <h2>Reports</h2>
+      <div class="placeholder">Reports feature coming soon...</div>
+    </div>
+
+    <!-- Registration Section -->
+    <div id="registration-section">
+      <h2>Registration</h2>
+      <div class="placeholder">Registration feature coming soon...</div>
+    </div>
+  </div>
+
+  <script>
+    // Tab navigation
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const sections = document.querySelectorAll("#admin-sections > div");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        sections.forEach(s => s.classList.remove("active"));
+
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.section).classList.add("active");
+      });
+    });
+
+    // Placeholder logout functionality
+    document.getElementById("logout-button").addEventListener("click", () => {
+      alert("Logout clicked! You can wire this up to supabase signOut later.");
+    });
+
+    // Placeholder Add Product button
+    document.getElementById("add-product-btn").addEventListener("click", () => {
+      alert("Add Product clicked! Functionality will be implemented later.");
+    });
+  </script>
+</body>
+</html>
