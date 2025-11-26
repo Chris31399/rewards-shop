@@ -20,12 +20,10 @@ async function testConnection() {
 // SIGNUP
 // ========================
 async function handleSignup(email, password) {
-  // 1. Create auth user
-  const { data: authData, error: authError } =
-    await supabaseClient.auth.signUp({
-      email,
-      password,
-    });
+  const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+    email,
+    password,
+  });
 
   if (authError) {
     alert("Signup failed: " + authError.message);
@@ -34,7 +32,6 @@ async function handleSignup(email, password) {
 
   const user = authData.user;
 
-  // 2. Insert into profiles table
   const { error: profileError } = await supabaseClient.from("profiles").insert({
     id: user.id,
     email: user.email,
@@ -51,10 +48,9 @@ async function handleSignup(email, password) {
   window.location.href = "login.html";
 }
 
-// Signup event listener (only runs on signup page)
+// Signup event listener
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
-
   if (signupForm) {
     signupForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -82,10 +78,9 @@ async function handleLogin(email, password) {
   window.location.href = "dashboard.html";
 }
 
-// Login event listener (only runs on login page)
+// Login event listener
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
-
   if (loginForm) {
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -97,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ========================
-// DASHBOARD
+// DASHBOARD - Load Profile
 // ========================
 async function loadProfile() {
   const {
@@ -115,20 +110,26 @@ async function loadProfile() {
     .eq("id", user.id)
     .single();
 
-  document.getElementById("profile").innerHTML = `
+  const profileContainer = document.getElementById("profile");
+  if (profileContainer) {
+    profileContainer.innerHTML = `
         <p>Email: ${profile.email}</p>
         <p>Role: ${profile.roles.name}</p>
         <p>Points: ${profile.points}</p>
     `;
+  }
 }
 
-// Dashboard load + logout button
+// ========================
+// DASHBOARD - Logout Button
+// ========================
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("profile")) {
     loadProfile();
+    loadRewards(); // Load rewards dynamically when dashboard loads
   }
 
-  const logoutBtn = document.getElementById("logout");
+  const logoutBtn = document.getElementById("logout-button");
   if (logoutBtn) {
     logoutBtn.onclick = async () => {
       await supabaseClient.auth.signOut();
@@ -136,5 +137,68 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 });
+
+// ========================
+// DASHBOARD - Load Rewards
+// ========================
+async function loadRewards() {
+  const container = document.querySelector(".product-grid");
+  if (!container) return;
+
+  container.innerHTML = `<p>Loading rewards...</p>`;
+
+  // Fetch rewards
+  const { data: rewards, error } = await supabaseClient
+    .from("rewards")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    container.innerHTML = `<p>Error loading rewards.</p>`;
+    console.error(error);
+    return;
+  }
+
+  // Fetch reward_tags + tags
+  const { data: rewardTags, error: tagsError } = await supabaseClient
+    .from("reward_tags")
+    .select("reward_id, tag_name");
+
+  if (tagsError) {
+    console.error(tagsError);
+  }
+
+  // Map reward_id → array of tag names
+  const tagMap = {};
+  rewardTags?.forEach(rt => {
+    if (!tagMap[rt.reward_id]) tagMap[rt.reward_id] = [];
+    tagMap[rt.reward_id].push(rt.tag_name);
+  });
+
+  // Build the product grid
+  container.innerHTML = ""; // clear placeholder boxes
+
+  rewards.forEach(reward => {
+    const tags = tagMap[reward.id] || [];
+
+    const card = document.createElement("div");
+    card.className = "product-placeholder"; // reuse existing style
+    card.innerHTML = `
+        <img src="${reward.image_url || "placeholder.jpg"}" class="reward-image" style="width:100%;height:120px;object-fit:cover;border-radius:6px;">
+        <h3 style="margin:8px 0 4px;">${reward.name}</h3>
+        <p style="margin:0 0 4px;">Cost: ${reward.cost} pts</p>
+        <p style="font-size:12px;color:#ccc;">${reward.description}</p>
+        <div style="margin-top:4px;">
+            ${tags.map(t => `<span class="tag" style="padding:2px 6px;background:rgba(255,255,255,0.2);border-radius:4px;font-size:10px;margin-right:4px;">${t}</span>`).join("")}
+        </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  if (rewards.length === 0) {
+    container.innerHTML = `<p>No rewards available.</p>`;
+  }
+}
 
 testConnection();
