@@ -282,7 +282,8 @@ body {
     background: rgba(0,0,0,0.6);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding-top: 120px;
 }
 
 .filter-content {
