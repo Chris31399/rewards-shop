@@ -339,6 +339,67 @@ async function toggleWishlist(rewardId, heartElement) {
     heartElement.textContent = "♡";
   }
 }
+// ======================================================
+// Admin Dashboard
+// ======================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("product-table")) {
+    loadProducts();
+  }
+});
+
+async function loadProducts() {
+  const { data: products, error } = await supabaseClient
+    .from("rewards")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Error loading products:", error);
+    return;
+  }
+
+  renderProductTable(products);
+}
+
+function renderProductTable(products) {
+  const tbody = document.querySelector("#product-table tbody");
+  tbody.innerHTML = "";
+
+  products.forEach(p => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td><img src="${p.image_url}" class="product-thumb"></td>
+      <td>${p.id}</td>
+      <td>${p.name}</td>
+      <td>${p.cost}</td>
+      <td>${p.description}</td>
+      <td class="actions-cell">
+        <span class="action-icon edit-icon" data-id="${p.id}">✏️</span>
+        <span class="action-icon delete-icon" data-id="${p.id}">🗑️</span>
+      </td>
+    `;
+
+    tbody.appendChild(row);
+  });
+
+  // Wire up edit/delete events
+  document.querySelectorAll(".edit-icon").forEach(icon => {
+    icon.addEventListener("click", () => {
+      const id = icon.dataset.id;
+      alert("Edit product " + id + " (function coming soon)");
+    });
+  });
+
+  document.querySelectorAll(".delete-icon").forEach(icon => {
+    icon.addEventListener("click", () => {
+      const id = icon.dataset.id;
+      alert("Delete product " + id + " (function coming soon)");
+    });
+  });
+}
 
 // ======================================================
 // SEARCH
