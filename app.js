@@ -95,9 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // DASHBOARD - Load Profile
 // ========================
 async function loadProfile() {
-  const {
-    data: { user },
-  } = await supabaseClient.auth.getUser();
+  const { data: { user } } = await supabaseClient.auth.getUser();
 
   if (!user) {
     window.location.href = "login.html";
@@ -142,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // DASHBOARD - Load Rewards
 // ========================
 async function loadRewards() {
-  const container = document.querySelector(".product-grid");
+  const container = document.getElementById("rewards-container");
   if (!container) return;
 
   container.innerHTML = `<p>Loading rewards...</p>`;
@@ -159,14 +157,12 @@ async function loadRewards() {
     return;
   }
 
-  // Fetch reward_tags + tags
+  // Fetch reward tags
   const { data: rewardTags, error: tagsError } = await supabaseClient
     .from("reward_tags")
     .select("reward_id, tag_name");
 
-  if (tagsError) {
-    console.error(tagsError);
-  }
+  if (tagsError) console.error(tagsError);
 
   // Map reward_id → array of tag names
   const tagMap = {};
@@ -175,22 +171,23 @@ async function loadRewards() {
     tagMap[rt.reward_id].push(rt.tag_name);
   });
 
-  // Build the product grid
-  container.innerHTML = ""; // clear placeholder boxes
+  // Clear container
+  container.innerHTML = "";
 
   rewards.forEach(reward => {
     const tags = tagMap[reward.id] || [];
 
     const card = document.createElement("div");
-    card.className = "product-placeholder"; // reuse existing style
+    card.className = "reward-card"; // proper reward styling
+
     card.innerHTML = `
-        <img src="${reward.image_url || "placeholder.jpg"}" class="reward-image" style="width:100%;height:120px;object-fit:cover;border-radius:6px;">
-        <h3 style="margin:8px 0 4px;">${reward.name}</h3>
-        <p style="margin:0 0 4px;">Cost: ${reward.cost} pts</p>
-        <p style="font-size:12px;color:#ccc;">${reward.description}</p>
-        <div style="margin-top:4px;">
-            ${tags.map(t => `<span class="tag" style="padding:2px 6px;background:rgba(255,255,255,0.2);border-radius:4px;font-size:10px;margin-right:4px;">${t}</span>`).join("")}
-        </div>
+      <img src="${reward.image_url || "placeholder.jpg"}" class="reward-image">
+      <h3>${reward.name}</h3>
+      <p class="reward-cost">${reward.cost} pts</p>
+      <p class="reward-description">${reward.description}</p>
+      <div class="reward-tags">
+        ${tags.map(t => `<span class="tag">${t}</span>`).join("")}
+      </div>
     `;
 
     container.appendChild(card);
