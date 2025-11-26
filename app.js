@@ -148,8 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ======================================================
-// LOAD REWARDS
-// (fetches only — rendering handled by renderRewards())
+// LOAD REWARDS (fetches only — rendering handled by renderRewards())
 // ======================================================
 async function loadRewards() {
   const container = document.getElementById("rewards-container");
@@ -185,7 +184,7 @@ async function loadRewards() {
 }
 
 // ======================================================
-// RENDER REWARDS (single source of truth)
+// RENDER REWARDS
 // ======================================================
 function renderRewards() {
   const container = document.getElementById("rewards-container");
@@ -254,20 +253,57 @@ function renderRewards() {
     const heart = card.querySelector(".wishlist-heart");
     if (heart) {
       heart.addEventListener("click", (e) => {
-        const h = e.target;
-
-        if (h.classList.contains("heart-empty")) {
-          h.classList.remove("heart-empty");
-          h.classList.add("heart-filled");
-          h.textContent = "❤️";
-        } else {
-          h.classList.remove("heart-filled");
-          h.classList.add("heart-empty");
-          h.textContent = "♡";
-        }
+          const heartElement = e.target;
+          toggleWishlist(reward.id, heartElement); // NEW FUNCTION CALL
       });
     }
+// End of renderRewards()
   });
+}
+
+// ======================================================
+// TOGGLE WISHLIST FUNCTION
+// ======================================================
+
+async function toggleWishlist(rewardId, heartElement) {
+  // Get current user
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+
+  // Check current state
+  const isAdding = heartElement.classList.contains("heart-empty");
+
+  if (isAdding) {
+    // Add to wishlist
+    const { error } = await supabaseClient.from("wishlist").insert({
+      profile_id: user.id,
+      reward_id: rewardId
+    });
+
+    if (error) {
+      console.error("Failed to add to wishlist:", error);
+      return;
+    }
+
+    heartElement.classList.remove("heart-empty");
+    heartElement.classList.add("heart-filled");
+    heartElement.textContent = "❤️";
+  } else {
+    // Remove from wishlist
+    const { error } = await supabaseClient.from("wishlist")
+      .delete()
+      .eq("profile_id", user.id)
+      .eq("reward_id", rewardId);
+
+    if (error) {
+      console.error("Failed to remove from wishlist:", error);
+      return;
+    }
+
+    heartElement.classList.remove("heart-filled");
+    heartElement.classList.add("heart-empty");
+    heartElement.textContent = "♡";
+  }
 }
 
 // ======================================================
