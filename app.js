@@ -138,5 +138,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 testConnection();
-
-// Redeploy
