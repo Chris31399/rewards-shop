@@ -75,17 +75,51 @@ document.addEventListener("DOMContentLoaded", () => {
 // LOGIN
 // ======================================================
 async function handleLogin(email, password) {
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
+  // 1. Sign in
+  const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
     email,
     password,
   });
 
-  if (error) {
-    alert("Login failed: " + error.message);
+  if (authError) {
+    alert("Login failed: " + authError.message);
     return;
   }
 
-  window.location.href = "dashboard.html";
+  // 2. Get current user
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+    alert("Could not retrieve user info.");
+    return;
+  }
+
+  // 3. Get profile including role
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("role_id")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !profile) {
+    alert("Profile not found or error: " + (profileError?.message || ""));
+    return;
+  }
+
+  // 4. Redirect based on role_id
+  switch (profile.role_id) {
+    case 1: // Admin
+      window.location.href = "adminDashboard.html";
+      break;
+    case 2: // Employee (not implemented yet)
+      window.location.href = "employeeDashboard.html"; 
+      break;
+    case 3: // Customer
+      window.location.href = "dashboard.html";
+      break;
+    default:
+      alert("Role not found. Please contact support.");
+      break;
+  }
 }
 
 // Login listener
