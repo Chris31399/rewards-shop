@@ -275,3 +275,29 @@ body {
     flex-wrap: wrap;
     gap: 20px;
 }
+
+.filter-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.filter-content {
+    width: 350px;
+    padding: 20px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    color: #fff;
+}
+
+.hidden {
+    display: none;
+}
+
+.filter-tag-checkbox {
+    margin: 6px 0;
+}
