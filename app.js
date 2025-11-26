@@ -150,15 +150,20 @@ async function loadRewards() {
     return;
   }
 
-  // Fetch reward tags
+  // Fetch tags
   const { data: rewardTags, error: tagsError } = await supabaseClient
     .from("reward_tags")
     .select("reward_id, tag_name");
+
+  if (tagsError) console.error(tagsError);
+
+  // Store globally for filtering + sorting
   allRewards = rewards;
   allRewardTags = rewardTags;
 
+  // Render once
   renderRewards();
-  
+}
   if (tagsError) console.error(tagsError);
 
   // Map reward_id → array of tag names
@@ -190,22 +195,6 @@ async function loadRewards() {
     `;
 
     container.appendChild(card);
-    
-    card.querySelector(".wishlist-heart").addEventListener("click", (e) => {
-    const heart = e.target;
-  
-    if (heart.classList.contains("heart-empty")) {
-      heart.classList.remove("heart-empty");
-      heart.classList.add("heart-filled");
-      heart.textContent = "❤️";
-    } else {
-      heart.classList.remove("heart-filled");
-      heart.classList.add("heart-empty");
-      heart.textContent = "♡";
-    }
-});
-
-
   });
 
   if (rewards.length === 0) {
@@ -219,7 +208,7 @@ function renderRewards() {
 
   let filtered = [...allRewards];
 
-  // 1. SEARCH FILTER
+  // SEARCH
   if (searchQuery.trim() !== "") {
     filtered = filtered.filter(r =>
       r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -227,7 +216,7 @@ function renderRewards() {
     );
   }
 
-  // 2. TAG FILTERS
+  // TAG FILTERS
   if (activeFilters.length > 0) {
     const tagMap = {};
     allRewardTags.forEach(t => {
@@ -240,7 +229,7 @@ function renderRewards() {
     );
   }
 
-  // 3. SORTING
+  // SORT
   switch (sortMode) {
     case "low-to-high":
       filtered.sort((a, b) => a.cost - b.cost);
@@ -261,6 +250,7 @@ function renderRewards() {
     return;
   }
 
+  // RENDER CARDS
   filtered.forEach(reward => {
     const rewardTagNames = allRewardTags
       .filter(t => t.reward_id === reward.id)
@@ -270,6 +260,7 @@ function renderRewards() {
     card.className = "reward-card";
 
     card.innerHTML = `
+      <span class="wishlist-heart heart-empty" data-id="${reward.id}">♡</span>
       <img src="${reward.image_url || "placeholder.jpg"}" class="reward-image">
       <h3>${reward.name}</h3>
       <p class="reward-cost">${reward.cost} pts</p>
@@ -281,21 +272,20 @@ function renderRewards() {
 
     container.appendChild(card);
 
-    // Handle wishlist click
+    // Wishlist toggle
     card.querySelector(".wishlist-heart").addEventListener("click", (e) => {
-    const heart = e.target;
+      const heart = e.target;
 
-    if (heart.classList.contains("heart-empty")) {
-      heart.classList.remove("heart-empty");
-      heart.classList.add("heart-filled");
-      heart.textContent = "❤️";
-    } else {
-      heart.classList.remove("heart-filled");
-      heart.classList.add("heart-empty");
-      heart.textContent = "♡";
-    }
-});
-
+      if (heart.classList.contains("heart-empty")) {
+        heart.classList.remove("heart-empty");
+        heart.classList.add("heart-filled");
+        heart.textContent = "❤️";
+      } else {
+        heart.classList.remove("heart-filled");
+        heart.classList.add("heart-empty");
+        heart.textContent = "♡";
+      }
+    });
   });
 }
 
