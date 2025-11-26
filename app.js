@@ -1,25 +1,33 @@
-// Variables
+// ======================================================
+// GLOBAL STATE VARIABLES
+// ======================================================
 let allRewards = [];
 let allRewardTags = [];
 let activeFilters = [];
 let searchQuery = "";
 let sortMode = "";
 
+// ======================================================
 // SUPABASE CLIENT
+// ======================================================
 const SUPABASE_URL = "https://jllbfimaqxenasoycjjw.supabase.co/";
 const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsbGJmaW1hcXhlbmFzb3ljamp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1ODY4NzQsImV4cCI6MjA3OTE2Mjg3NH0.HKDLCnnTE9b__BHog0lk9PBy7FoxrZz6wPt4bihgdk0";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// ======================================================
 // TEST CONNECTION
+// ======================================================
 async function testConnection() {
   const { data, error } = await supabaseClient.from("roles").select("*");
   if (error) console.error("Connection failed:", error);
   else console.log("Connection successful! Roles table:", data);
 }
 
+// ======================================================
 // SIGNUP
+// ======================================================
 async function handleSignup(email, password) {
   const { data: authData, error: authError } = await supabaseClient.auth.signUp({
     email,
@@ -49,20 +57,23 @@ async function handleSignup(email, password) {
   window.location.href = "login.html";
 }
 
-// Signup event listener
+// Signup listener
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   if (signupForm) {
     signupForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      handleSignup(email, password);
+      handleSignup(
+        document.getElementById("email").value,
+        document.getElementById("password").value
+      );
     });
   }
 });
 
+// ======================================================
 // LOGIN
+// ======================================================
 async function handleLogin(email, password) {
   const { data, error } = await supabaseClient.auth.signInWithPassword({
     email,
@@ -77,20 +88,23 @@ async function handleLogin(email, password) {
   window.location.href = "dashboard.html";
 }
 
-// Login event listener
+// Login listener
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
   if (loginForm) {
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const email = document.getElementById("login-email").value;
-      const password = document.getElementById("login-password").value;
-      handleLogin(email, password);
+      handleLogin(
+        document.getElementById("login-email").value,
+        document.getElementById("login-password").value
+      );
     });
   }
 });
 
-// DASHBOARD - Load Profile
+// ======================================================
+// LOAD PROFILE (Dashboard)
+// ======================================================
 async function loadProfile() {
   const { data: { user } } = await supabaseClient.auth.getUser();
 
@@ -115,11 +129,13 @@ async function loadProfile() {
   }
 }
 
-// DASHBOARD - Logout Button
+// ======================================================
+// INITIALIZE DASHBOARD
+// ======================================================
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("profile")) {
     loadProfile();
-    loadRewards(); // Load rewards dynamically when dashboard loads
+    loadRewards();
   }
 
   const logoutBtn = document.getElementById("logout-button");
@@ -131,7 +147,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// DASHBOARD - Load Rewards
+// ======================================================
+// LOAD REWARDS
+// (fetches only — rendering handled by renderRewards())
+// ======================================================
 async function loadRewards() {
   const container = document.getElementById("rewards-container");
   if (!container) return;
@@ -145,8 +164,8 @@ async function loadRewards() {
     .order("id", { ascending: true });
 
   if (error) {
-    container.innerHTML = `<p>Error loading rewards.</p>`;
     console.error(error);
+    container.innerHTML = `<p>Error loading rewards.</p>`;
     return;
   }
 
@@ -157,51 +176,17 @@ async function loadRewards() {
 
   if (tagsError) console.error(tagsError);
 
-  // Store globally for filtering + sorting
+  // Save globally
   allRewards = rewards;
   allRewardTags = rewardTags;
 
-  // Render once
+  // Render
   renderRewards();
 }
-  if (tagsError) console.error(tagsError);
 
-  // Map reward_id → array of tag names
-  const tagMap = {};
-  rewardTags?.forEach(rt => {
-    if (!tagMap[rt.reward_id]) tagMap[rt.reward_id] = [];
-    tagMap[rt.reward_id].push(rt.tag_name);
-  });
-
-  // Clear container
-  container.innerHTML = "";
-
-  rewards.forEach(reward => {
-    const tags = tagMap[reward.id] || [];
-
-    const card = document.createElement("div");
-    card.className = "reward-card"; // proper reward styling
-
-    card.innerHTML = `
-      <span class="wishlist-heart heart-empty" data-id="${reward.id}">♡</span>
-    
-      <img src="${reward.image_url || "placeholder.jpg"}" class="reward-image">
-      <h3>${reward.name}</h3>
-      <p class="reward-cost">${reward.cost} pts</p>
-      <p class="reward-description">${reward.description}</p>
-      <div class="reward-tags">
-        ${tags.map(t => `<span class="tag">${t}</span>`).join("")}
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
-
-  if (rewards.length === 0) {
-    container.innerHTML = `<p>No rewards available.</p>`;
-  }
-}
-// RENDER REWARDS
+// ======================================================
+// RENDER REWARDS (single source of truth)
+// ======================================================
 function renderRewards() {
   const container = document.getElementById("rewards-container");
   container.innerHTML = "";
@@ -216,7 +201,7 @@ function renderRewards() {
     );
   }
 
-  // TAG FILTERS
+  // FILTER BY TAGS
   if (activeFilters.length > 0) {
     const tagMap = {};
     allRewardTags.forEach(t => {
@@ -231,20 +216,13 @@ function renderRewards() {
 
   // SORT
   switch (sortMode) {
-    case "low-to-high":
-      filtered.sort((a, b) => a.cost - b.cost);
-      break;
-    case "high-to-low":
-      filtered.sort((a, b) => b.cost - a.cost);
-      break;
-    case "name-asc":
-      filtered.sort((a, b) => a.name.localeCompare(b.name));
-      break;
-    case "name-desc":
-      filtered.sort((a, b) => b.name.localeCompare(a.name));
-      break;
+    case "low-to-high": filtered.sort((a, b) => a.cost - b.cost); break;
+    case "high-to-low": filtered.sort((a, b) => b.cost - a.cost); break;
+    case "name-asc": filtered.sort((a, b) => a.name.localeCompare(b.name)); break;
+    case "name-desc": filtered.sort((a, b) => b.name.localeCompare(a.name)); break;
   }
 
+  // EMPTY RESULT
   if (filtered.length === 0) {
     container.innerHTML = `<p>No rewards match your filters.</p>`;
     return;
@@ -272,41 +250,49 @@ function renderRewards() {
 
     container.appendChild(card);
 
-    // Wishlist toggle
-    card.querySelector(".wishlist-heart").addEventListener("click", (e) => {
-      const heart = e.target;
+    // WISHLIST ICON CLICK HANDLER
+    const heart = card.querySelector(".wishlist-heart");
+    if (heart) {
+      heart.addEventListener("click", (e) => {
+        const h = e.target;
 
-      if (heart.classList.contains("heart-empty")) {
-        heart.classList.remove("heart-empty");
-        heart.classList.add("heart-filled");
-        heart.textContent = "❤️";
-      } else {
-        heart.classList.remove("heart-filled");
-        heart.classList.add("heart-empty");
-        heart.textContent = "♡";
-      }
-    });
+        if (h.classList.contains("heart-empty")) {
+          h.classList.remove("heart-empty");
+          h.classList.add("heart-filled");
+          h.textContent = "❤️";
+        } else {
+          h.classList.remove("heart-filled");
+          h.classList.add("heart-empty");
+          h.textContent = "♡";
+        }
+      });
+    }
   });
 }
 
+// ======================================================
 // SEARCH
+// ======================================================
 document.getElementById("search-input")?.addEventListener("input", e => {
   searchQuery = e.target.value;
   renderRewards();
 });
 
+// ======================================================
 // SORT
+// ======================================================
 document.getElementById("sort-select")?.addEventListener("change", e => {
   sortMode = e.target.value;
   renderRewards();
 });
 
+// ======================================================
 // FILTER MODAL
-document.getElementById("filter-btn")?.addEventListener("click", async () => {
+// ======================================================
+document.getElementById("filter-btn")?.addEventListener("click", () => {
   const modal = document.getElementById("filter-modal");
   const list = document.getElementById("filter-tag-list");
 
-  // Get unique tag names
   const tags = [...new Set(allRewardTags.map(t => t.tag_name))];
 
   list.innerHTML = tags
@@ -335,4 +321,7 @@ document.getElementById("close-filter")?.addEventListener("click", () => {
   document.getElementById("filter-modal").classList.add("hidden");
 });
 
+// ======================================================
+// RUN CONNECTION TEST
+// ======================================================
 testConnection();
