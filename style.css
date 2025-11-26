@@ -268,3 +268,9 @@ body {
     border-radius: 10px;
     font-size: 12px;
 }
+
+.rewards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
