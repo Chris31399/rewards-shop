@@ -78,5 +78,34 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
+
+  <!-- ========================================= -->
+  <!-- EDIT PRODUCT MODAL -->
+  <!-- ========================================= -->
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Edit Product</h2>
+  
+      <label>ID</label>
+      <input type="text" id="edit-id" readonly>
+  
+      <label>Name</label>
+      <input type="text" id="edit-name">
+  
+      <label>Cost</label>
+      <input type="number" id="edit-cost">
+  
+      <label>Description</label>
+      <textarea id="edit-description" rows="3"></textarea>
+  
+      <label>Image URL</label>
+      <input type="text" id="edit-image">
+  
+      <div class="modal-buttons">
+        <button id="save-edit-btn" class="save-btn">Save</button>
+        <button id="cancel-edit-btn" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
