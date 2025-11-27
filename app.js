@@ -387,11 +387,31 @@ function renderProductTable(products) {
 
   // Wire up edit/delete events
   document.querySelectorAll(".edit-icon").forEach(icon => {
-    icon.addEventListener("click", () => {
-      const id = icon.dataset.id;
-      alert("Edit product " + id + " (function coming soon)");
-    });
+  icon.addEventListener("click", async () => {
+    const id = icon.dataset.id;
+
+    const { data, error } = await supabaseClient
+      .from("rewards")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      alert("Error fetching product: " + error.message);
+      return;
+    }
+
+    // Fill modal inputs
+    document.getElementById("edit-id").value = data.id;
+    document.getElementById("edit-name").value = data.name;
+    document.getElementById("edit-cost").value = data.cost;
+    document.getElementById("edit-description").value = data.description;
+    document.getElementById("edit-image").value = data.image_url;
+
+    // Show modal
+    document.getElementById("edit-modal").classList.remove("hidden");
   });
+});
 
   document.querySelectorAll(".delete-icon").forEach(icon => {
     icon.addEventListener("click", () => {
@@ -452,7 +472,39 @@ document.getElementById("close-filter")?.addEventListener("click", () => {
   document.getElementById("filter-modal").classList.add("hidden");
 });
 
-// ======================================================
+// CLOSE EDIT MODAL
+document.getElementById("cancel-edit-btn").addEventListener("click", () => {
+  document.getElementById("edit-modal").classList.add("hidden");
+});
+
+// SAVE EDIT CHANGES
+document.getElementById("save-edit-btn").addEventListener("click", async () => {
+  const id = document.getElementById("edit-id").value;
+  const name = document.getElementById("edit-name").value;
+  const cost = document.getElementById("edit-cost").value;
+  const description = document.getElementById("edit-description").value;
+  const image_url = document.getElementById("edit-image").value;
+
+  const { error } = await supabaseClient
+    .from("rewards")
+    .update({
+      name,
+      cost,
+      description,
+      image_url
+    })
+    .eq("id", id);
+
+  if (error) {
+    alert("Update failed: " + error.message);
+    return;
+  }
+
+  document.getElementById("edit-modal").classList.add("hidden");
+
+  // Reload table
+  loadProducts();
+});
+
 // RUN CONNECTION TEST
-// ======================================================
 testConnection();
