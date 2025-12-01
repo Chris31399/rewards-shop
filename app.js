@@ -385,36 +385,31 @@ async function toggleWishlist(rewardId, heartElement) {
 // ======================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-
   // If on the Products tab for admin dashboard
   if (document.getElementById("product-table")) {
     loadProducts();
   }
-
-  // Employee Registration Form
-  const empForm = document.getElementById("employee-reg-form");
-  if (empForm) {
-    empForm.addEventListener("submit", (e) => {
+  // --- Employee Registration ---
+  const employeeForm = document.getElementById("employee-reg-form");
+  if (employeeForm) {
+    employeeForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const email = document.getElementById("employee-email").value;
       const password = document.getElementById("employee-password").value;
-      registerAdminOrEmployee(email, password, 2); // role_id = 2 (Employee)
+      registerAdminOrEmployee(email, password, 2); // role_id = 2 for employee
     });
   }
-
-  // Admin Registration Form
-  const admForm = document.getElementById("admin-reg-form");
-  if (admForm) {
-    admForm.addEventListener("submit", (e) => {
+  // --- Admin Registration ---
+  const adminForm = document.getElementById("admin-reg-form");
+  if (adminForm) {
+    adminForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const email = document.getElementById("admin-email").value;
       const password = document.getElementById("admin-password").value;
-      registerAdminOrEmployee(email, password, 1); // role_id = 1 (Admin)
+      registerAdminOrEmployee(email, password, 1); // role_id = 1 for admin
     });
   }
-
 });
-
 
 async function loadProducts() {
   const { data: products, error } = await supabaseClient
