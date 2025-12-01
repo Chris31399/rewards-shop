@@ -81,6 +81,33 @@
       </div>
     </div>
   </div>
+
+  <!-- ADD PRODUCT MODAL -->
+  <div id="add-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Add New Product</h2>
+  
+      <label>Name</label>
+      <input type="text" id="add-name">
+  
+      <label>Cost</label>
+      <input type="number" id="add-cost">
+  
+      <label>Description</label>
+      <textarea id="add-description" rows="3"></textarea>
+  
+      <label>Image URL</label>
+      <input type="text" id="add-image">
+  
+      <div class="modal-buttons">
+        <button id="save-add-btn" class="save-btn">Add</button>
+        <button id="cancel-add-btn" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
+  
   <script>
     // Tab navigation
     const tabButtons = document.querySelectorAll(".tab-btn");
@@ -98,7 +125,7 @@
 
     // Placeholder add product
     document.getElementById("add-product-btn").addEventListener("click", () => {
-      alert("Add Product clicked! Functionality will be implemented later.");
+      document.getElementById("add-modal").classList.remove("hidden");
     });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
