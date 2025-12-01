@@ -71,6 +71,47 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+async function registerAdminOrEmployee(email, password, roleId) {
+  // Confirmation popup
+  const confirmMsg = roleId === 1 
+    ? "Are you sure you want to create an ADMIN account?" 
+    : "Are you sure you want to create an EMPLOYEE account?";
+
+  if (!confirm(confirmMsg)) return;
+
+  // 1. Create auth user
+  const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+    email,
+    password,
+  });
+
+  if (authError) {
+    alert("Signup failed: " + authError.message);
+    return;
+  }
+
+  const user = authData.user;
+
+  // 2. Insert profile with specified role
+  const { error: profileError } = await supabaseClient.from("profiles").insert({
+    id: user.id,
+    email: user.email,
+    role_id: roleId, 
+    points: 0,
+  });
+
+  if (profileError) {
+    alert("Profile creation error: " + profileError.message);
+    return;
+  }
+
+  alert(
+    roleId === 1 
+      ? "Admin account created successfully!" 
+      : "Employee account created successfully!"
+  );
+}
+
 // ======================================================
 // LOGIN
 // ======================================================
@@ -344,10 +385,36 @@ async function toggleWishlist(rewardId, heartElement) {
 // ======================================================
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  // If on the Products tab for admin dashboard
   if (document.getElementById("product-table")) {
     loadProducts();
   }
+
+  // Employee Registration Form
+  const empForm = document.getElementById("employee-reg-form");
+  if (empForm) {
+    empForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("employee-email").value;
+      const password = document.getElementById("employee-password").value;
+      registerAdminOrEmployee(email, password, 2); // role_id = 2 (Employee)
+    });
+  }
+
+  // Admin Registration Form
+  const admForm = document.getElementById("admin-reg-form");
+  if (admForm) {
+    admForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("admin-email").value;
+      const password = document.getElementById("admin-password").value;
+      registerAdminOrEmployee(email, password, 1); // role_id = 1 (Admin)
+    });
+  }
+
 });
+
 
 async function loadProducts() {
   const { data: products, error } = await supabaseClient
