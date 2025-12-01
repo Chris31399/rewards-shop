@@ -414,12 +414,68 @@ function renderProductTable(products) {
 });
 
   document.querySelectorAll(".delete-icon").forEach(icon => {
-    icon.addEventListener("click", () => {
+    icon.addEventListener("click", async () => {
       const id = icon.dataset.id;
-      alert("Delete product " + id + " (function coming soon)");
+  
+      if (!confirm("Are you sure you want to delete product ID " + id + "?")) {
+        return;
+      }
+  
+      const { error } = await supabaseClient
+        .from("rewards")
+        .delete()
+        .eq("id", id);
+  
+      if (error) {
+        alert("Error deleting product: " + error.message);
+        return;
+      }
+  
+      alert("Product deleted!");
+      loadProducts(); // Refresh table
     });
   });
 }
+
+// ADD PRODUCT HANDLERS
+// Add Product - Save Button
+document.getElementById("save-add-btn")?.addEventListener("click", async () => {
+  const name = document.getElementById("add-name").value.trim();
+  const cost = parseInt(document.getElementById("add-cost").value);
+  const description = document.getElementById("add-description").value.trim();
+  const image = document.getElementById("add-image").value.trim();
+
+  if (!name || !cost || !description) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  const { error } = await supabaseClient.from("rewards").insert({
+    name,
+    cost,
+    description,
+    image_url: image
+  });
+
+  if (error) {
+    alert("Error adding product: " + error.message);
+    return;
+  }
+
+  alert("Product added successfully!");
+
+  document.getElementById("add-modal").classList.add("hidden");
+
+  loadProducts(); // Refresh table
+});
+
+// Add Product - Cancel Button
+document.getElementById("cancel-add-btn")?.addEventListener("click", () => {
+  document.getElementById("add-modal").classList.add("hidden");
+});
+
+
+
 
 // ======================================================
 // SEARCH
