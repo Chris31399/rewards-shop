@@ -51,7 +51,38 @@
       <!-- Registration Section -->
       <div id="registration-section" class="admin-section">
         <h2>Registration</h2>
-        <div class="placeholder">Registration feature coming soon...</div>
+        
+        <div class="registration-grid">
+          <!-- Employee Registration -->
+          <div class="reg-card">
+            <h3>Create Employee Account</h3>
+        
+            <form id="employee-reg-form">
+              <label>Email</label>
+              <input type="email" id="employee-email" required>
+        
+              <label>Password</label>
+              <input type="password" id="employee-password" required>
+        
+              <button type="submit" class="save-btn">Register Employee</button>
+            </form>
+          </div>
+        
+          <!-- Admin Registration -->
+          <div class="reg-card">
+            <h3>Create Admin Account</h3>
+        
+            <form id="admin-reg-form">
+              <label>Email</label>
+              <input type="email" id="admin-email" required>
+        
+              <label>Password</label>
+              <input type="password" id="admin-password" required>
+        
+              <button type="submit" class="save-btn danger">Register Admin</button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
