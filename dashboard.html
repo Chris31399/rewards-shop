@@ -48,7 +48,31 @@
         <button id="close-filter" class="toolbar-btn">Close</button>
     </div>
   </div>
+  <!-- ORDER MODAL -->
+  <div id="order-modal" class="modal hidden">
+    <div class="modal-content">
   
+      <h2 id="order-item-name"></h2>
+      <img id="order-item-image" style="width:100%; border-radius:8px; margin-bottom:10px">
+  
+      <p id="order-item-cost" style="font-weight:bold;"></p>
+  
+      <label>Quantity:</label>
+      <div style="display:flex; gap:10px; align-items:center;">
+          <button id="qty-minus" class="toolbar-btn">-</button>
+          <span id="qty-value" style="font-size:20px; font-weight:bold;">1</span>
+          <button id="qty-plus" class="toolbar-btn">+</button>
+      </div>
+  
+      <p id="order-total" style="margin-top:10px; font-size:18px;"></p>
+  
+      <div class="modal-buttons">
+        <button id="confirm-order-btn" class="save-btn">Confirm</button>
+        <button id="cancel-order-btn" class="cancel-btn">Back</button>
+      </div>
+  
+    </div>
+  </div>
   <!-- End of Dashboard Wrapper-->
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
