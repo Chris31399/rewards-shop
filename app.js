@@ -835,8 +835,6 @@ document.getElementById("confirm-issue-points")?.addEventListener("click", async
 // EMPLOYEE — LOAD PENDING ORDERS
 // ===============================
 async function loadPendingOrders() {
-  console.log("loadPendingOrders() STARTED");
-  console.log("AUTH USER:", await supabaseClient.auth.getUser());
   const { data, error } = await supabaseClient
     .from("orders")
     .select(`
@@ -847,7 +845,7 @@ async function loadPendingOrders() {
       points_spent,
       status,
       created_at,
-      profiles ( email ),
+      profiles!customer_id ( email ),
       rewards ( name )
     `)
     .eq("status", "pending")
