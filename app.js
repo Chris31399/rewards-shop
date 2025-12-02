@@ -6,6 +6,8 @@ let allRewardTags = [];
 let activeFilters = [];
 let searchQuery = "";
 let sortMode = "";
+let selectedReward = null;
+let selectedQty = 1;
 
 // ======================================================
 // SUPABASE CLIENT
@@ -318,6 +320,7 @@ function renderRewards() {
       <p class="reward-cost">${reward.cost} pts</p>
       <p class="reward-description">${reward.description}</p>
       <div class="reward-tags">
+        <button class="redeem-btn" data-id="${reward.id}">Redeem</button>
         ${rewardTagNames.map(t => `<span class="tag">${t}</span>`).join("")}
       </div>
     `;
@@ -332,9 +335,76 @@ function renderRewards() {
           toggleWishlist(reward.id, heartElement); // NEW FUNCTION CALL
       });
     }
+
+    // Add Redeem button handler
+    const redeemBtn = card.querySelector(".redeem-btn");
+    redeemBtn.addEventListener("click", () => openOrderModal(reward));
 // End of renderRewards()
   });
 }
+
+    function openOrderModal(reward) {
+      selectedReward = reward;
+      selectedQty = 1;
+    
+      document.getElementById("order-item-name").textContent = reward.name;
+      document.getElementById("order-item-image").src = reward.image_url;
+      document.getElementById("order-item-cost").textContent = `${reward.cost} pts each`;
+    
+      document.getElementById("qty-value").textContent = selectedQty;
+      document.getElementById("order-total").textContent = `Total: ${reward.cost} pts`;
+    
+      document.getElementById("order-modal").classList.remove("hidden");
+    }
+    
+    document.getElementById("qty-plus").addEventListener("click", () => {
+      selectedQty++;
+      updateOrderTotal();
+    });
+    
+    document.getElementById("qty-minus").addEventListener("click", () => {
+      if (selectedQty > 1) selectedQty--;
+      updateOrderTotal();
+    });
+    
+    function updateOrderTotal() {
+      document.getElementById("qty-value").textContent = selectedQty;
+      document.getElementById("order-total").textContent =
+        `Total: ${selectedReward.cost * selectedQty} pts`;
+    }
+    
+    document.getElementById("cancel-order-btn").addEventListener("click", () => {
+      document.getElementById("order-modal").classList.add("hidden");
+    });
+
+    document.getElementById("confirm-order-btn").addEventListener("click", async () => {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) {
+        alert("You must be logged in.");
+        return;
+      }
+    
+      const pointsSpent = selectedReward.cost * selectedQty;
+    
+      // 1. Create order
+      const { error } = await supabaseClient.from("orders").insert({
+        customer_id: user.id,
+        reward_id: selectedReward.id,
+        quantity: selectedQty,
+        points_spent: pointsSpent,
+        status: "pending"
+      });
+    
+      if (error) {
+        alert("Order failed: " + error.message);
+        console.error(error);
+        return;
+      }
+    
+      alert("Order placed successfully!");
+    
+      document.getElementById("order-modal").classList.add("hidden");
+    });
 
 // ======================================================
 // TOGGLE WISHLIST FUNCTION
