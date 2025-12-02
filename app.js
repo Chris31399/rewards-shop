@@ -624,5 +624,100 @@ document.getElementById("save-edit-btn").addEventListener("click", async () => {
   loadProducts();
 });
 
+//Employee Dashboard:
+if (document.getElementById("customer-table")) {
+  loadCustomerList();
+}
+
+async function loadCustomerList() {
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("id, email, points")
+    .eq("role_id", 3)
+    .order("email", { ascending: true });
+
+  if (error) {
+    console.error("Failed to load customers:", error);
+    return;
+  }
+
+  renderCustomerTable(data);
+}
+
+function renderCustomerTable(customers) {
+  const tbody = document.querySelector("#customer-table tbody");
+  tbody.innerHTML = "";
+
+  customers.forEach(c => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${c.email}</td>
+      <td>${c.points}</td>
+      <td>
+        <button class="toolbar-btn issue-btn" data-id="${c.id}" data-email="${c.email}">
+          Issue Points
+        </button>
+      </td>
+    `;
+
+    tbody.appendChild(row);
+  });
+
+  // Wire up each "Issue Points" button
+  document.querySelectorAll(".issue-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const profileId = e.target.dataset.id;
+      const email = e.target.dataset.email;
+      openIssuePointsModal(profileId, email);
+    });
+  });
+}
+
+let selectedProfileId = null;
+
+function openIssuePointsModal(profileId, email) {
+  selectedProfileId = profileId;
+
+  document.getElementById("points-event").value = "";
+  document.getElementById("points-standings").value = "";
+  document.getElementById("points-amount").value = "";
+
+  document.getElementById("issue-points-modal").classList.remove("hidden");
+}
+
+document.getElementById("cancel-issue-points")?.addEventListener("click", () => {
+  document.getElementById("issue-points-modal").classList.add("hidden");
+});
+
+document.getElementById("confirm-issue-points")?.addEventListener("click", async () => {
+  const eventName = document.getElementById("points-event").value.trim();
+  const standings = document.getElementById("points-standings").value.trim();
+  const points = parseInt(document.getElementById("points-amount").value);
+
+  if (!eventName || !standings || !points || points < 1) {
+    alert("Please fill out all fields correctly.");
+    return;
+  }
+
+  // SUPABASE UPDATE POINTS LOGIC GOES HERE
+  alert(`Points issued!\nEvent: ${eventName}\nStandings: ${standings}\nPoints: ${points}`);
+
+  document.getElementById("issue-points-modal").classList.add("hidden");
+
+  // Refresh customer table
+  loadCustomerList();
+});
+
+document.getElementById("customer-search")?.addEventListener("input", (e) => {
+  const query = e.target.value.toLowerCase();
+  const rows = document.querySelectorAll("#customer-table tbody tr");
+
+  rows.forEach(row => {
+    const email = row.children[0].textContent.toLowerCase();
+    row.style.display = email.includes(query) ? "" : "none";
+  });
+});
+
 // RUN CONNECTION TEST
 testConnection();
