@@ -845,19 +845,17 @@ async function loadPendingOrders() {
       points_spent,
       status,
       created_at,
-      profiles!customer_id ( email ),
-      rewards!reward_id ( name )
+      customer:profiles!orders_customer_id_fkey ( email ),
+      employee:profiles!orders_employee_id_fkey ( email ),
+      reward:rewards!orders_reward_id_fkey ( name )
     `)
     .eq("status", "pending")
     .order("created_at", { ascending: true });
-  
     console.log("ORDERS QUERY:", data, error);
-  
   if (error) {
     console.error("Error loading orders:", error);
     return;
   }
-
   renderOrdersTable(data);
 }
 
