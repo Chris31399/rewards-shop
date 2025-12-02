@@ -820,6 +820,139 @@ document.getElementById("confirm-issue-points")?.addEventListener("click", async
   loadCustomerList();
 });
 
+// ===============================
+// EMPLOYEE — LOAD PENDING ORDERS
+// ===============================
+async function loadPendingOrders() {
+
+  const { data, error } = await supabaseClient
+    .from("orders")
+    .select(`
+      id,
+      customer_id,
+      reward_id,
+      quantity,
+      points_spent,
+      status,
+      created_at,
+      profiles ( email ),
+      rewards ( name )
+    `)
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error loading orders:", error);
+    return;
+  }
+
+  renderOrdersTable(data);
+}
+
+function renderOrdersTable(orders) {
+  const tbody = document.querySelector("#orders-table tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  orders.forEach(order => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${order.id}</td>
+      <td>${order.profiles?.email || "Unknown"}</td>
+      <td>${order.rewards?.name || "??"}</td>
+      <td>${order.quantity}</td>
+      <td>${order.points_spent}</td>
+      <td>${new Date(order.created_at).toLocaleString()}</td>
+      <td style="text-align: right;">
+        <button class="toolbar-btn confirm-order-btn" data-id="${order.id}">Confirm</button>
+        <button class="toolbar-btn cancel-order-btn" data-id="${order.id}">Cancel</button>
+      </td>
+    `;
+
+    tbody.appendChild(row);
+  });
+
+  // Wire up confirm buttons
+  document.querySelectorAll(".confirm-order-btn").forEach(btn => {
+    btn.addEventListener("click", () => confirmOrder(btn.dataset.id));
+  });
+
+  // Wire up cancel buttons
+  document.querySelectorAll(".cancel-order-btn").forEach(btn => {
+    btn.addEventListener("click", () => cancelOrder(btn.dataset.id));
+  });
+}
+
+async function confirmOrder(orderId) {
+  if (!confirm("Mark this order as fulfilled?")) return;
+
+  const { error } = await supabaseClient
+    .from("orders")
+    .update({
+      status: "fulfilled",
+      fulfilled_at: new Date().toISOString()
+    })
+    .eq("id", orderId);
+
+  if (error) {
+    alert("Error confirming order: " + error.message);
+    return;
+  }
+
+  alert("Order marked as fulfilled.");
+  loadPendingOrders();
+}
+
+async function cancelOrder(orderId) {
+  if (!confirm("Cancel this order and refund points?")) return;
+
+  // Get order info first
+  const { data: order, error: fetchError } = await supabaseClient
+    .from("orders")
+    .select("customer_id, points_spent")
+    .eq("id", orderId)
+    .single();
+
+  if (fetchError) {
+    alert("Error loading order: " + fetchError.message);
+    return;
+  }
+
+  // Refund customer
+  const { error: refundError } = await supabaseClient
+    .rpc("increment_points", {
+      profile_id_input: order.customer_id,
+      amount: order.points_spent
+    });
+
+  if (refundError) {
+    alert("Refund failed: " + refundError.message);
+    return;
+  }
+
+  // Mark order cancelled
+  const { error: cancelError } = await supabaseClient
+    .from("orders")
+    .update({ status: "cancelled" })
+    .eq("id", orderId);
+
+  if (cancelError) {
+    alert("Cancel failed: " + cancelError.message);
+    return;
+  }
+
+  alert("Order cancelled and points refunded.");
+  loadPendingOrders();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("orders-table")) {
+    loadPendingOrders();
+  }
+});
+
 document.getElementById("customer-search")?.addEventListener("input", (e) => {
   const query = e.target.value.toLowerCase();
   const rows = document.querySelectorAll("#customer-table tbody tr");
