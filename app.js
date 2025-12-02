@@ -920,10 +920,10 @@ async function confirmOrder(orderId) {
 async function cancelOrder(orderId) {
   if (!confirm("Cancel this order and refund points?")) return;
 
-  // Get order info first
+  // 1. Load the order (only pending ones should be cancellable)
   const { data: order, error: fetchError } = await supabaseClient
     .from("orders")
-    .select("customer_id, points_spent")
+    .select("customer_id, points_spent, status")
     .eq("id", orderId)
     .single();
 
@@ -932,19 +932,23 @@ async function cancelOrder(orderId) {
     return;
   }
 
-  // Refund customer
-  const { error: refundError } = await supabaseClient
-    .rpc("increment_points", {
-      profile_id_input: order.customer_id,
-      amount: order.points_spent
-    });
+  if (!order || order.status !== "pending") {
+    alert("This order is no longer pending and cannot be cancelled.");
+    return;
+  }
+
+  // 2. Refund the customer via RPC
+  const { error: refundError } = await supabaseClient.rpc("increment_points", {
+    profile_id_input: order.customer_id,
+    amount_input: order.points_spent
+  });
 
   if (refundError) {
     alert("Refund failed: " + refundError.message);
     return;
   }
 
-  // Mark order cancelled
+  // 3. Mark order as cancelled (preserve history)
   const { error: cancelError } = await supabaseClient
     .from("orders")
     .update({ status: "cancelled" })
@@ -956,7 +960,7 @@ async function cancelOrder(orderId) {
   }
 
   alert("Order cancelled and points refunded.");
-  loadPendingOrders();
+  loadPendingOrders(); // Refresh the table
 }
 
 document.addEventListener("DOMContentLoaded", () => {
