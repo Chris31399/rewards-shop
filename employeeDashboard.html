@@ -117,23 +117,17 @@
   
   <!-- TAB SWITCHING SCRIPT (same as admin) -->
   <script>
-    const tabButtons = document.querySelectorAll(".tab-btn");
-    const sections = document.querySelectorAll(".admin-section");
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  const sections = document.querySelectorAll(".admin-section");
 
-    tabButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
+  tabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
         tabButtons.forEach(b => b.classList.remove("active"));
         sections.forEach(s => s.classList.remove("active"));
 
         btn.classList.add("active");
         document.getElementById(btn.dataset.section).classList.add("active");
       });
-    });
-
-    // Logout handler
-    document.getElementById("logout-button").addEventListener("click", async () => {
-      const { error } = await supabaseClient.auth.signOut();
-      window.location.href = "login.html";
     });
   </script>
 
