@@ -834,6 +834,7 @@ document.getElementById("confirm-issue-points")?.addEventListener("click", async
 // ===============================
 async function loadPendingOrders() {
 
+  console.log("AUTH USER:", await supabaseClient.auth.getUser());
   const { data, error } = await supabaseClient
     .from("orders")
     .select(`
@@ -848,6 +849,7 @@ async function loadPendingOrders() {
       rewards ( name )
     `)
     .eq("status", "pending")
+    console.log("ORDERS QUERY:", data, error);
     .order("created_at", { ascending: true });
 
   if (error) {
