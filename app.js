@@ -378,33 +378,71 @@ function renderRewards() {
     });
 
     document.getElementById("confirm-order-btn").addEventListener("click", async () => {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (!user) {
-        alert("You must be logged in.");
-        return;
-      }
-    
-      const pointsSpent = selectedReward.cost * selectedQty;
-    
-      // 1. Create order
-      const { error } = await supabaseClient.from("orders").insert({
-        customer_id: user.id,
-        reward_id: selectedReward.id,
-        quantity: selectedQty,
-        points_spent: pointsSpent,
-        status: "pending"
-      });
-    
-      if (error) {
-        alert("Order failed: " + error.message);
-        console.error(error);
-        return;
-      }
-    
-      alert("Order placed successfully!");
-    
-      document.getElementById("order-modal").classList.add("hidden");
-    });
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+    alert("You must be logged in.");
+    return;
+  }
+
+  const pointsSpent = selectedReward.cost * selectedQty;
+
+  // STEP 1 — Get current points
+  const { data: profile, error: fetchError } = await supabaseClient
+    .from("profiles")
+    .select("points")
+    .eq("id", user.id)
+    .single();
+
+  if (fetchError) {
+    alert("Error checking your points.");
+    return;
+  }
+
+  if (profile.points < pointsSpent) {
+    alert("You do not have enough points to redeem this reward.");
+    return;
+  }
+
+  // STEP 2 — Deduct points immediately
+  const newPointTotal = profile.points - pointsSpent;
+
+  const { error: deductError } = await supabaseClient
+    .from("profiles")
+    .update({ points: newPointTotal })
+    .eq("id", user.id);
+
+  if (deductError) {
+    alert("Failed to deduct points: " + deductError.message);
+    return;
+  }
+
+  // STEP 3 — Create order
+  const { error: orderError } = await supabaseClient.from("orders").insert({
+    customer_id: user.id,
+    reward_id: selectedReward.id,
+    quantity: selectedQty,
+    points_spent: pointsSpent,
+    status: "pending"
+  });
+
+  // STEP 4 — If order fails, refund points
+  if (orderError) {
+    await supabaseClient
+      .from("profiles")
+      .update({ points: profile.points }) // refund
+      .eq("id", user.id);
+
+    alert("Order failed: " + orderError.message);
+    return;
+  }
+
+  alert("Order placed successfully!");
+
+  document.getElementById("order-modal").classList.add("hidden");
+
+  // Refresh points display
+  loadProfile();
+});
 
 // ======================================================
 // TOGGLE WISHLIST FUNCTION
