@@ -713,12 +713,12 @@ document.getElementById("close-filter")?.addEventListener("click", () => {
 });
 
 // CLOSE EDIT MODAL
-document.getElementById("cancel-edit-btn").addEventListener("click", () => {
+document.getElementById("cancel-edit-btn")?.addEventListener("click", () => {
   document.getElementById("edit-modal").classList.add("hidden");
 });
 
 // SAVE EDIT CHANGES
-document.getElementById("save-edit-btn").addEventListener("click", async () => {
+document.getElementById("save-edit-btn")?.addEventListener("click", async () => {
   const id = document.getElementById("edit-id").value;
   const name = document.getElementById("edit-name").value;
   const cost = document.getElementById("edit-cost").value;
