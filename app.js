@@ -961,9 +961,9 @@ async function cancelOrder(orderId) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("orders-table")) {
-    loadPendingOrders();
-  }
+  console.log("DOM LOADED");
+  console.log("orders-table exists:", !!document.getElementById("orders-table"));
+  loadPendingOrders();
 });
 
 document.getElementById("customer-search")?.addEventListener("input", (e) => {
