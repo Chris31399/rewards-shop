@@ -319,10 +319,13 @@ function renderRewards() {
       <h3>${reward.name}</h3>
       <p class="reward-cost">${reward.cost} pts</p>
       <p class="reward-description">${reward.description}</p>
+      
+    <div class="reward-bottom">
       <div class="reward-tags">
         ${rewardTagNames.map(t => `<span class="tag">${t}</span>`).join("")}
       </div>
       <button class="redeem-btn" data-id="${reward.id}">Redeem</button>
+    </div>
     `;
 
     container.appendChild(card);
