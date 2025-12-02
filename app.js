@@ -844,18 +844,20 @@ async function loadPendingOrders() {
       quantity,
       points_spent,
       status,
-      created_at,
+      order_date,
       customer:profiles!orders_customer_id_fkey ( email ),
       employee:profiles!orders_employee_id_fkey ( email ),
       reward:rewards!orders_reward_id_fkey ( name )
     `)
     .eq("status", "pending")
-    .order("created_at", { ascending: true });
-    console.log("ORDERS QUERY:", data, error);
+    .order("order_date", { ascending: true });
+
+  console.log("ORDERS QUERY:", data, error);
   if (error) {
     console.error("Error loading orders:", error);
     return;
   }
+
   renderOrdersTable(data);
 }
 
@@ -870,11 +872,11 @@ function renderOrdersTable(orders) {
 
     row.innerHTML = `
       <td>${order.id}</td>
-      <td>${order.profiles?.email || "Unknown"}</td>
-      <td>${order.rewards?.name || "??"}</td>
+      <td>${order.customer?.email || "Unknown"}</td>
+      <td>${order.reward?.name || "??"}</td>
       <td>${order.quantity}</td>
       <td>${order.points_spent}</td>
-      <td>${new Date(order.created_at).toLocaleString()}</td>
+      <td>${new Date(order.order_date).toLocaleString()}</td>
       <td style="text-align: right;">
         <button class="toolbar-btn confirm-order-btn" data-id="${order.id}">Confirm</button>
         <button class="toolbar-btn cancel-order-btn" data-id="${order.id}">Cancel</button>
@@ -902,7 +904,7 @@ async function confirmOrder(orderId) {
     .from("orders")
     .update({
       status: "fulfilled",
-      fulfilled_at: new Date().toISOString()
+      fulfilled_date: new Date().toISOString()
     })
     .eq("id", orderId);
 
