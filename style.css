@@ -247,8 +247,6 @@ body {
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* pushes bottom content down */
-    height: 420px; /* consistent box height */
 }
 
 .reward-bottom {
