@@ -846,7 +846,7 @@ async function loadPendingOrders() {
       status,
       created_at,
       profiles!customer_id ( email ),
-      rewards ( name )
+      rewards!reward_id ( name )
     `)
     .eq("status", "pending")
     .order("created_at", { ascending: true });
