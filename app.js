@@ -788,6 +788,5 @@ document.getElementById("customer-search")?.addEventListener("input", (e) => {
     row.style.display = email.includes(query) ? "" : "none";
   });
 });
-
 // RUN CONNECTION TEST
 testConnection();
