@@ -1,3 +1,5 @@
+console.log("APP.JS LOADED");
+
 // ======================================================
 // GLOBAL STATE VARIABLES
 // ======================================================
@@ -833,7 +835,7 @@ document.getElementById("confirm-issue-points")?.addEventListener("click", async
 // EMPLOYEE — LOAD PENDING ORDERS
 // ===============================
 async function loadPendingOrders() {
-
+  console.log("loadPendingOrders() STARTED");
   console.log("AUTH USER:", await supabaseClient.auth.getUser());
   const { data, error } = await supabaseClient
     .from("orders")
