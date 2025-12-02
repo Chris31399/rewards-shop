@@ -528,3 +528,20 @@ body {
   background-color: #c62828;
   color: white;
 }
+
+.redeem-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  background: #00d17d;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.redeem-btn:hover {
+  background: #00b76e;
+}
