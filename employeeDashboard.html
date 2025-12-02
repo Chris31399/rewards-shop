@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard-wrapper">
+
+    <!-- HEADER -->
+    <header class="dashboard-header">
+      <h1>Employee Dashboard</h1>
+      <button id="logout-button" class="logout-btn">Logout</button>
+    </header>
+
+    <!-- NAVIGATION TABS -->
+    <nav class="admin-nav">
+      <button class="tab-btn active" data-section="orders-section">Orders</button>
+      <button class="tab-btn" data-section="points-section">Issue Points</button>
+      <button class="tab-btn" data-section="accounts-section">Manage Accounts</button>
+    </nav>
+
+    <!-- SECTION CONTAINER -->
+    <div id="employee-sections">
+
+      <!-- ORDERS SECTION -->
+      <div id="orders-section" class="active admin-section">
+        <h2>Orders</h2>
+        <div class="placeholder">Order management coming soon...</div>
+      </div>
+
+      <!-- ISSUE POINTS SECTION -->
+      <div id="points-section" class="admin-section">
+        <h2>Issue Points</h2>
+        <div class="placeholder">Issue points feature coming soon...</div>
+      </div>
+
+      <!-- MANAGE ACCOUNTS SECTION -->
+      <div id="accounts-section" class="admin-section">
+        <h2>Manage Accounts</h2>
+        <div class="placeholder">Account management coming soon...</div>
+      </div>
+
+    </div> <!-- /employee-sections -->
+
+  </div> <!-- /dashboard-wrapper -->
+
+  <!-- TAB SWITCHING SCRIPT (same as admin) -->
+  <script>
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const sections = document.querySelectorAll(".admin-section");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        sections.forEach(s => s.classList.remove("active"));
+
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.section).classList.add("active");
+      });
+    });
+
+    // Logout handler
+    document.getElementById("logout-button").addEventListener("click", async () => {
+      const { error } = await supabaseClient.auth.signOut();
+      window.location.href = "login.html";
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
