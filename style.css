@@ -340,11 +340,6 @@ body {
   opacity: 0.8;
 }
 
-/* Make sure card allows absolute positioning */
-.reward-card {
-  position: relative;
-}
-
 /* ===========================
    ADMIN DASHBOARD STYLES
    =========================== */
