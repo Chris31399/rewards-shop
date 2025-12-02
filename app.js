@@ -851,9 +851,10 @@ async function loadPendingOrders() {
       rewards ( name )
     `)
     .eq("status", "pending")
-    console.log("ORDERS QUERY:", data, error);
     .order("created_at", { ascending: true });
-
+  
+    console.log("ORDERS QUERY:", data, error);
+  
   if (error) {
     console.error("Error loading orders:", error);
     return;
