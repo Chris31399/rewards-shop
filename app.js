@@ -822,12 +822,32 @@ document.getElementById("confirm-issue-points")?.addEventListener("click", async
     return;
   }
 
-  // SUPABASE UPDATE POINTS LOGIC GOES HERE
+  if (!selectedProfileId) {
+    alert("No customer selected. Please choose a customer from the table first.");
+    return;
+  }
+
+  // 1. Call the same RPC used for refunds, but with a positive amount
+  const { error: rpcError } = await supabaseClient.rpc("increment_points", {
+    profile_id_input: selectedProfileId,
+    amount_input: points
+  });
+
+  if (rpcError) {
+    console.error("Error issuing points:", rpcError);
+    alert("Failed to issue points: " + rpcError.message);
+    return;
+  }
+
+  // 2. (Optional) Here you could insert a row into a points_log table
+  //    e.g. event name, standings, employee id, etc.
+
+  // 3. Show success and refresh UI
   alert(`Points issued!\nEvent: ${eventName}\nStandings: ${standings}\nPoints: ${points}`);
 
   document.getElementById("issue-points-modal").classList.add("hidden");
 
-  // Refresh customer table
+  // Reload the customer table so the updated points show up
   loadCustomerList();
 });
 
