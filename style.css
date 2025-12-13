@@ -560,7 +560,6 @@ select.toolbar-btn {
   background: #00b76e;
 }
 
-/* Makes + / - quantity buttons black */
 #qty-minus,
 #qty-plus {
   background: #000 !important;
