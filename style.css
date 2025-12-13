@@ -176,6 +176,10 @@ body {
   backdrop-filter: blur(8px);
 }
 
+select.toolbar-btn {
+  color: #000;
+}
+
 .toolbar-btn:hover {
   background: rgba(255,255,255,0.35);
 }
@@ -512,10 +516,12 @@ body {
 }
 
 .reg-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.15); 
+  color: #fff; 
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
 }
 
 .reg-card h3 {
@@ -528,6 +534,8 @@ body {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  background: #ffffff;
+  color: #000;
 }
 
 .danger {
